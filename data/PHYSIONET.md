@@ -1,162 +1,176 @@
-# Panduan Dataset Nyata PhysioNet
+# Dataset nyata dari PhysioNet
 
-Jalur **opsional**. Sesi hari-H tetap memakai dataset sintetis di `data/`. Panduan ini untuk peserta yang ingin menguji kode buatannya pada rekaman manusia sungguhan, dan untuk bonus KPP.
+Panduan ini opsional bagi peserta dan **wajib** bagi pemateri, karena live demo
+pada presentasi memakai MIT-BIH.
 
-Baca [ATTRIBUTION.md](../ATTRIBUTION.md) lebih dulu. Kewajiban kutipan bukan formalitas administratif; itu syarat lisensi.
+## 1. Mengapa sesi memakai data sintetis lebih dulu
 
----
+Keputusan ini bukan soal lisensi. MIT-BIH justru berlisensi ODC-BY 1.0 yang
+mengizinkan redistribusi turunan dengan atribusi. Alasannya rekayasa:
 
-## 1. Mengapa sesi memakai data sintetis, bukan data nyata
+1. **Determinisme.** Data sintetis punya BPM acuan yang diketahui persis dari
+   proses sintesisnya, sehingga checkpoint dapat dinilai otomatis.
+2. **Tanpa jaringan.** Wi-Fi Teater B belum terverifikasi. 120 peserta yang
+   mengunduh serentak adalah titik kegagalan tunggal.
+3. **Ukuran.** Satu rekaman MIT-BIH utuh berukuran sekitar 1,95 MB per berkas
+   sinyal.
+4. **Beban kognitif.** Artefak data nyata muncul di menit ke-90 sesi, ketika
+   peserta belum punya alat untuk menanganinya.
 
-Empat alasan rekayasa, bukan alasan kemalasan:
+Setelah kode peserta berjalan pada data sintetis, data nyata menjadi bahan ajar
+terbaik justru karena **detektor sederhana akan gagal di sana**.
 
-1. **Determinisme.** Dataset sintetis punya BPM acuan yang diketahui persis. Kamu bisa tahu jawabanmu benar tanpa menebak.
-2. **Ukuran.** Satu rekaman MIT-BIH berdurasi 30 menit, berkas `.dat`-nya sekitar 1,95 MB per rekaman. Tiga latihan 5 detik tidak memerlukannya.
-3. **Ketiadaan jaringan.** Teater B belum terverifikasi punya Wi-Fi yang mampu melayani 120 peserta mengunduh serentak. Sesi 60 menit tidak boleh bergantung pada itu.
-4. **Beban kognitif.** Data nyata membawa artefak gerak, *baseline wander*, dan denyut ektopik sekaligus. Itu materi Semester 4, bukan menit ke-90 hari pertama.
+## 2. Katalog dataset yang lisensinya sudah diverifikasi
 
-Setelah kodemu berjalan pada data bersih, barulah data nyata menjadi informatif: ia menunjukkan **di mana algoritmamu gagal**, dan itulah nilai sesungguhnya.
+| Dataset | Akses | Lisensi | Spesifikasi | Catatan |
+| --- | --- | --- | --- | --- |
+| MIT-BIH Arrhythmia (`mitdb`) | Terbuka | ODC-BY 1.0 | 48 rekaman 30 menit, 47 pasien, 360 Hz, anotasi `.atr` per denyut | Satu-satunya di sini yang punya *ground truth* per denyut. Dipakai untuk live demo |
+| PTB-XL | Terbuka | CC BY 4.0 | 21.799 EKG 12-lead, 10 detik per rekaman, 500 Hz dan 100 Hz | Terlalu pendek untuk HRV |
+| BIDMC PPG and Respiration | Terbuka | ODC-BY 1.0 | 53 rekaman ICU 8 menit, PPG + EKG + respirasi, 125 Hz | Paling cocok untuk PPG. Penamaan rekaman WFDB-nya **belum diverifikasi** |
+| Pulse Transit Time PPG | Terbuka | **ODbL 1.0** | — | **Hindari.** Ada kewajiban bertipe *share-alike* pada basis data turunan |
+| Keluarga MIMIC | *Credentialed* | Credentialed Health Data Use Agreement | — | **Dilarang untuk BMW.** DUA melarang berbagi akses ke pihak lain, dan FAQ PhysioNet menyatakan berbagi data dalam tim atau kelas tidak diizinkan |
 
----
+Aturan praktis untuk BMW: pakai hanya dataset berlisensi **ODC-BY** atau
+**CC BY**, dan selalu kutip sesuai `ATTRIBUTION.md`.
 
-## 2. Katalog dataset yang aman dipakai
+## 3. Tiga cara mengambil data
 
-| Kode | Nama | Sinyal | fs | Lisensi | Anotasi denyut | Cocok untuk |
-| --- | --- | --- | --- | --- | --- | --- |
-| `mitdb` | MIT-BIH Arrhythmia Database | EKG 2 kanal | 360 Hz | ODC-BY 1.0 | Ya, `.atr` per denyut | Validasi deteksi R-Peak. **Pilihan utama.** |
-| `ptbxl` | PTB-XL | EKG 12 lead klinis | 500 Hz (tersedia versi 100 Hz) | CC BY 4.0 | Tidak per denyut; label diagnosis SCP-ECG | Latihan multi-lead dan metadata pasien |
-| `bidmc` | BIDMC PPG and Respiration | PPG, EKG, impedansi respirasi | 125 Hz | ODC-BY 1.0 | Anotasi napas manual, bukan denyut | Latihan PPG dan hubungan PPG–EKG |
-
-Catatan penting per dataset:
-
-- **`mitdb` adalah satu-satunya yang memberi *ground truth* per denyut.** Hanya dengan dataset ini kamu bisa menghitung sensitivitas dan presisi detektormu secara jujur. Rekaman `100` adalah titik awal konvensional karena morfologinya relatif bersih.
-- **PTB-XL** hanya 10 detik per rekaman. Bagus untuk latihan Pandas dengan metadata (`ptbxl_database.csv`), lemah untuk analisis HRV karena terlalu pendek.
-- **BIDMC** berisi PPG dan EKG pada subjek ICU. Penamaan rekaman WFDB-nya belum saya verifikasi langsung; jika `fetch_physionet.py` gagal untuk `bidmc`, buka halaman datasetnya dan periksa daftar berkas. Jangan asumsikan skrip selalu benar.
-
-Dataset yang **dihindari**: seluruh keluarga MIMIC (butuh *credentialed access* + CITI + DUA) dan dataset berlisensi ODbL. Rinciannya di [ATTRIBUTION.md](../ATTRIBUTION.md) bagian 4.
-
----
-
-## 3. Cara mengunduh
-
-### Jalur A: skrip repositori (disarankan)
+### a. Lewat skrip repositori ini
 
 ```bash
 pip install -r requirements-physionet.txt
-python data/fetch_physionet.py --db mitdb --record 100 --durasi 30
+python data/fetch_physionet.py --daftar
+python data/fetch_physionet.py --db mitdb --record 100 --durasi 60
 ```
 
-Hasilnya:
+Hasilnya `data/real/mitdb_100_250hz.csv` berskema sama dengan data sintetis
+(`time_s`, `ecg_mv`), sehingga kodemu tidak perlu diubah sama sekali. Folder
+`data/real/` sengaja masuk `.gitignore`.
 
-```
-data/real/mitdb_100_250hz.csv        kolom time_s, ecg_mv — skema sama dengan data sintetis
-data/real/mitdb_100_reference.csv    BPM acuan dari anotasi .atr
-```
+### b. Manual
 
-Karena skemanya identik, seluruh kode CP1–CP3 langsung jalan: cukup ganti path pada `pd.read_csv`.
+Unduh **ketiganya**, bukan hanya `.dat`:
 
-### Jalur B: manual lewat peramban
+- `https://physionet.org/files/mitdb/1.0.0/100.hea` — header: fs, gain, baseline
+- `https://physionet.org/files/mitdb/1.0.0/100.dat` — sinyal
+- `https://physionet.org/files/mitdb/1.0.0/100.atr` — anotasi denyut
 
-Berkas WFDB dapat diunduh satu per satu. Untuk rekaman `100` MIT-BIH:
+Berkas `.dat` tanpa `.hea` **tidak dapat ditafsirkan**; angka di dalamnya nilai
+ADC mentah tanpa satuan.
 
-```
-https://physionet.org/files/mitdb/1.0.0/100.hea    header: fs, gain, jumlah kanal
-https://physionet.org/files/mitdb/1.0.0/100.dat    sinyal biner
-https://physionet.org/files/mitdb/1.0.0/100.atr    anotasi denyut oleh kardiolog
-```
+### c. Lewat peramban, tanpa memasang apa pun
 
-Ketiganya harus berada dalam satu folder dengan nama dasar sama. `100.dat` tanpa `100.hea` tidak dapat dibaca: header memuat *gain*, *baseline*, dan format sampel yang menentukan cara menafsirkan bit di `.dat`.
+`https://physionet.org/lightwave/?db=mitdb/1.0.0` — berguna untuk melihat bentuk
+sinyal dan anotasi sebelum menulis kode.
 
-### Jalur C: pratinjau tanpa mengunduh
+## 4. Data live demo untuk presentasi
 
-PhysioNet menyediakan penampil sinyal daring (LightWAVE):
-
-```
-https://physionet.org/lightwave/?db=mitdb/1.0.0
-```
-
-Berguna untuk memilih rekaman sebelum mengunduh, dan untuk melihat bentuk anotasi denyut secara visual.
-
----
-
-## 4. Tiga jebakan teknis yang pasti kamu temui
-
-### 4.1 Frekuensi sampling berbeda
-
-MIT-BIH memakai **360 Hz**, repositori ini memakai **250 Hz**. Jika kamu memasukkan sinyal 360 Hz ke fungsi yang berasumsi `fs = 250`, BPM-mu akan salah dengan faktor 360/250 = 1,44. Bradikardia 55 BPM akan terbaca 79 BPM. Kesalahan ini tidak memunculkan pesan error apa pun — itulah yang membuatnya berbahaya.
-
-Dua pilihan penanganan, keduanya sah:
-
-1. **Teruskan fs asli** sebagai argumen: `find_r_peaks(sinyal, fs=360)`. Paling jujur, tanpa distorsi.
-2. **Resample ke 250 Hz** dengan `scipy.signal.resample_poly(x, 25, 36)` karena 250/360 = 25/36. `fetch_physionet.py` memakai cara ini agar seluruh berkas CSV di repo punya `fs` yang sama.
-
-Pelajaran yang lebih besar: **`fs` adalah metadata yang wajib ikut menyertai sinyal.** Array angka tanpa `fs` tidak bermakna secara fisik.
-
-### 4.2 Satuan amplitudo
-
-`wfdb.rdrecord()` mengembalikan `p_signal` dalam satuan fisik (mV untuk EKG) karena telah menerapkan *gain* dan *baseline* dari header. `wfdb.rdsamp()` yang membaca nilai ADC mentah tidak. Selalu pakai `p_signal` bila kamu ingin sumbu-Y bermakna.
-
-Dampak pada kode kita kecil, karena `normalisasi_zscore` menghapus skala. Namun grafik dengan label "mV" yang sebenarnya berisi satuan ADC adalah kesalahan pelaporan, bukan sekadar kosmetik.
-
-### 4.3 Data nyata melanggar asumsi detektormu
-
-Detektor kita memakai ambang persentil 98 global dan *refractory period* 0,25 s. Pada data nyata ini akan gagal pada:
-
-- **Baseline wander** — pergeseran garis dasar akibat pernapasan membuat ambang global terlalu tinggi di satu bagian dan terlalu rendah di bagian lain.
-- **Gelombang T tinggi** — pada sebagian subjek gelombang T melewati ambang dan terhitung sebagai R-Peak.
-- **Denyut ektopik (PVC)** — amplitudonya bisa jauh lebih besar, menggeser persentil, sehingga denyut normal justru terlewat.
-- **Artefak gerak dan elektroda lepas** — lonjakan amplitudo besar yang bukan aktivitas jantung sama sekali.
-
-Kegagalan ini bukan bug. Inilah alasan detektor kelas klinis memakai *bandpass filter* 5–15 Hz, ambang adaptif yang diperbarui tiap denyut, dan penolakan artefak berbasis morfologi. Kode kita sengaja tidak memiliki semuanya — supaya kamu tahu mengapa mereka ada.
-
----
-
-## 5. Validasi jujur: bandingkan dengan anotasi kardiolog
-
-Inilah nilai utama MIT-BIH. Jalankan:
+Demo panggung tidak boleh bergantung pada jaringan. Karena itu ada jalur
+terpisah yang mengekspor sekali di rumah, lalu di-commit:
 
 ```bash
-python exercises/cp2b_validasi_anotasi.py --record 100
+pip install -r requirements-physionet.txt
+python demo/live_demo_mitbih.py --siapkan   # butuh internet, sekali saja
+git add data/demo && git commit -m "Tambah data demo MIT-BIH"
+python demo/live_demo_mitbih.py            # mode panggung, tanpa internet
 ```
 
-Skrip ini menghitung tiga angka yang biasa dipakai dalam evaluasi detektor QRS:
+Mode panggung hanya membaca CSV yang sudah di-commit dan **tidak** mengimpor
+`wfdb`. Bila berkasnya hilang, skrip beralih ke data sintetis dengan peringatan
+besar, sehingga demo tidak pernah mati di depan 120 peserta.
 
-| Metrik | Rumus | Arti |
+## 5. Tiga jebakan teknis yang pasti kamu temui
+
+### a. Frekuensi cuplik: MIT-BIH 360 Hz, dataset kita 250 Hz
+
+Ini kegagalan paling berbahaya karena **senyap**. Tidak ada exception, hanya
+angka yang salah secara sistematis.
+
+BPM dihitung dari `RR = selisih_indeks / fs`. Bila sinyal 360 Hz diproses dengan
+`fs = 250`, setiap interval RR dihitung **lebih panjang** daripada seharusnya,
+sehingga BPM terbaca **lebih rendah** dengan faktor 250/360 = **0,694**:
+
+| BPM sebenarnya (fs 360 Hz) | Terbaca bila fs diasumsikan 250 Hz | Akibat tafsir |
 | --- | --- | --- |
-| Sensitivitas (Se) | TP / (TP + FN) | Berapa persen denyut sebenarnya yang berhasil ditemukan |
-| Presisi (+P) | TP / (TP + FP) | Berapa persen deteksimu yang benar-benar denyut |
-| Selisih BPM | \|BPM kamu − BPM anotasi\| | Dampak akhir kesalahan deteksi terhadap laju jantung |
+| 52,0 | 36,1 | bradikardia ringan tampak sangat berat |
+| 72,0 | 50,0 | **normal tampak bradikardia** |
+| 108,0 | 75,0 | takikardia tampak normal |
 
-Sebuah deteksi dihitung *true positive* bila berada dalam jendela toleransi ±150 ms dari anotasi denyut. Angka 150 ms bukan pilihan sembarangan: ia kira-kira sepadan dengan lebar kompleks QRS ditambah ketidakpastian penempatan penanda oleh anotator manusia.
+Arah sebaliknya juga berlaku: sinyal 250 Hz yang diproses dengan `fs = 360` akan
+terbaca 1,44 kali lebih tinggi. Angka-angka di tabel ini hasil pengukuran, bukan
+perkiraan.
 
-Cara membaca hasilmu:
+Aturannya: **jangan pernah menuliskan `fs` sebagai konstanta untuk data
+PhysioNet.** Baca `record.fs`, atau turunkan laju cupliknya lebih dahulu:
 
-- **Se dan +P di atas 99% pada rekaman 100** — wajar; rekaman itu memang bersih.
-- **+P jauh lebih rendah daripada Se** — detektormu terlalu longgar; ada yang terdeteksi padanya bukan denyut. Naikkan persentil.
-- **Se jauh lebih rendah daripada +P** — detektormu terlalu ketat; denyut sebenarnya terlewat. Turunkan persentil.
-- **Keduanya jatuh pada rekaman lain (misalnya `108`, `203`, `207`)** — itu memang rekaman sulit dengan banyak artefak dan aritmia. Melaporkan kegagalan beserta penyebabnya bernilai lebih tinggi daripada memilih rekaman termudah lalu mengklaim algoritmamu sempurna.
+```python
+from scipy.signal import resample_poly
+turun = resample_poly(sinyal_360hz, 25, 36)   # 250/360 = 25/36
+```
 
-Jangan melaporkan satu rekaman lalu menyimpulkan kinerja umum. Uji minimal tiga rekaman dengan karakter berbeda.
+### b. Satuan amplitudo
 
----
+`record.p_signal` sudah dalam satuan fisik (mV) karena `gain` dan `baseline` dari
+`.hea` telah diterapkan. Nilai ADC mentah belum. Salah memilih di antara
+keduanya membuat ambang berbasis persentil masih bekerja tetapi setiap angka
+amplitudo tidak bermakna.
 
-## 6. Bonus KPP
+### c. Asumsi detektor yang dilanggar data nyata
 
-Dapat ditambahkan pada laporan KPP (lihat `kpp/RUBRIK_PENILAIAN.md`, penambah nilai maksimum +5):
+Detektor kita mengasumsikan puncak R adalah nilai tertinggi dan garis dasar
+stabil. Rekaman manusia melanggar keduanya:
 
-1. Jalankan detektormu pada satu rekaman MIT-BIH, laporkan Se, +P, dan selisih BPM, lalu jelaskan **satu** kasus kegagalan konkret dengan menunjukkan potongan grafiknya.
-2. Bandingkan hasil `fs = 360` asli dengan hasil setelah *resample* ke 250 Hz. Jelaskan mengapa selisihnya kecil atau besar.
-3. Sertakan kutipan lengkap sesuai [ATTRIBUTION.md](../ATTRIBUTION.md). Laporan yang memakai data PhysioNet tanpa atribusi tidak mendapat nilai bonus.
+- **Baseline wander** karena pernapasan dan gerakan elektroda menggeser garis dasar.
+- **Gelombang T tinggi** pada beberapa subjek melewati ambang dan terhitung ganda.
+- **Denyut ektopik** (PVC) beramplitudo jauh lebih besar sehingga menaikkan
+  persentil dan menekan denyut normal ke bawah ambang.
+- **Artefak gerakan** menghasilkan lonjakan yang lebih tinggi daripada QRS.
 
----
+Ini bukan bug pada kodemu. Inilah justifikasi konkret mengapa detektor klinis
+memakai bandpass 5-15 Hz, ambang adaptif per denyut, dan penolakan artefak.
 
-## 7. Rujukan
+## 6. Validasi yang jujur, bukan sekadar "tidak error"
+
+Catatan penting: sinyal sintetis repositori ini pun sudah membuktikan bahwa
+"tidak error" bukan bukti kebenaran. Ambang persentil 98 pada `ppg_sample.csv`
+menghasilkan 67,60 BPM padahal acuannya 87,92 -- salah 20,32 BPM tanpa satu pun
+pesan kesalahan. Karena itu setiap detektor wajib diukur terhadap acuan.
+
+Untuk data nyata, acuannya adalah anotasi kardiolog:
+
+```bash
+python exercises/cp2b_validasi_anotasi.py --record 100 --durasi 60
+```
+
+Skrip itu mencocokkan puncak hasil deteksimu dengan anotasi `.atr` satu-ke-satu
+dalam jendela toleransi **±150 ms**, lalu melaporkan:
+
+- **Sensitivitas (Se)** = TP / (TP + FN), berapa persen denyut sebenarnya yang tertangkap.
+- **Presisi (+P)** = TP / (TP + FP), berapa persen deteksi yang benar-benar denyut.
+- **Selisih BPM** terhadap laju dari anotasi.
+
+Cara membaca hasilnya:
+
+| Pola | Arti | Tindakan |
+| --- | --- | --- |
+| Se tinggi, +P rendah | ambang terlalu longgar, gelombang T ikut terhitung | naikkan persentil atau perpanjang refractory |
+| Se rendah, +P tinggi | ambang terlalu ketat, denyut beramplitudo rendah hilang | turunkan persentil |
+| Keduanya rendah | asumsi dasar gagal, bukan soal parameter | tambahkan bandpass dan koreksi baseline |
+
+BPM yang tepat dengan Se dan +P yang buruk berarti kesalahan yang saling
+menghapus. Itu kebetulan, bukan detektor yang benar.
+
+## 7. Bonus KPP
+
+Eksperimen dengan data PhysioNet dapat diajukan sebagai penambah nilai maksimum
++5, misalnya: melaporkan Se dan +P pada dua rekaman berkarakter berbeda
+(`100` normal versus `208` banyak PVC), atau menunjukkan pengaruh resampling
+360 -> 250 Hz terhadap hasil deteksi.
+
+## 8. Rujukan
 
 - MIT-BIH Arrhythmia Database: `https://physionet.org/content/mitdb/1.0.0/`
-- Lisensi MIT-BIH (ODC-BY 1.0): `https://physionet.org/content/mitdb/view-license/1.0.0/`
-- Direktori MIT-BIH (deskripsi tiap rekaman dan subjeknya): `https://physionet.org/physiobank/database/html/mitdbdir/mitdbdir.htm`
-- PTB-XL: `https://physionet.org/content/ptb-xl/`
-- BIDMC PPG and Respiration: `https://physionet.org/content/bidmc/`
-- WFDB for Python: `https://physionet.org/content/wfdb-python/` dan `https://wfdb.readthedocs.io/`
-- Kebijakan akses PhysioNet: `https://physionet.org/about/database/`
-- Kebijakan penggunaan data ber-DUA dengan layanan daring dan LLM: `https://physionet.org/news/post/llm-responsible-use/`
+- Lisensi ODC-BY 1.0: `https://physionet.org/content/mitdb/view-license/1.0.0/`
+- Paket `wfdb` untuk Python: `https://physionet.org/content/wfdb-python/`
+- Kode simbol anotasi: `https://www.physionet.org/physiobank/annotations.shtml`
+- Teks kutipan wajib: `ATTRIBUTION.md`
