@@ -25,7 +25,7 @@ Himpunan Mahasiswa Teknik Biomedik ITS
 
 ---
 
-Repo ini isinya semua bahan **Materi I (Software / Python)** BMW Basic 2026. Berkas latihan, dataset, kunci jawaban, panduan setup, sampai tugas rumah — semuanya di sini, jadi kamu tidak perlu mengunduh apa pun saat sesi berlangsung.
+Repo ini isinya semua bahan **Materi I (Software / Python)** BMW Basic 2026. Berkas latihan, dataset, panduan setup, sampai tugas rumah — semuanya di sini, jadi kamu tidak perlu mengunduh apa pun saat sesi berlangsung.
 
 | | |
 | --- | --- |
@@ -90,7 +90,7 @@ BMW2026-Basic-Python/
 │   │   ├── 02-pertanyaan-materi.yml form tanya konsep & KPP
 │   │   └── config.yml               pintasan ke SETUP, TROUBLESHOOTING, KPP
 │   └── workflows/
-│       ├── uji-kode.yml         uji tiap push: dataset, BPM, kasus tepi
+│       ├── uji-kode.yml         uji tiap push: dataset, fungsi inti, kasus tepi
 │       ├── uji-environment.yml  instal bersih di Windows/macOS/Linux
 │       └── rilis.yml            tag v* → ZIP + GitHub Release otomatis
 │
@@ -117,20 +117,35 @@ BMW2026-Basic-Python/
 │   ├── signal_utils.py          fungsi inti, berisi TODO CP2-a/b/c
 │   └── app_dashboard.py         dashboard Streamlit + Plotly, TODO CP3-a/b
 │
-├── solutions/
-│   └── signal_utils_solution.py kunci jawaban + pembanding scipy
-│
 ├── demo/
 │   └── live_demo_mitbih.py      demo panggung MIT-BIH, aman tanpa internet
 │
 ├── tools/
-│   ├── uji_cepat.py             18 pemeriksaan otomatis, dipakai CI
+│   ├── uji_cepat.py             ~45 pemeriksaan otomatis, dipakai CI
 │   └── build_notebooks.py       ubah latihan jadi .ipynb (jalur fail-safe)
 │
 └── kpp/
     ├── INSTRUKSI_KPP.md         deliverable, format berkas, tenggat
     └── RUBRIK_PENILAIAN.md      bobot nilai, bonus, dan penalti
 ```
+
+## Yang belum ada di sini, dan kenapa
+
+Satu folder sengaja tidak ikut: **kunci jawaban CP2**. Ia tinggal di repositori internal pemateri sampai sesi simulasi hari-1 selesai, lalu dipindahkan ke sini apa adanya.
+
+Alasannya sederhana: nilai latihan ini ada di 25 menit kamu bergelut sendiri dengan ambang adaptif dan *refractory period*. Kalau kuncinya sudah nangkring di tab sebelah, otak cenderung memilih jalan pintas — bukan karena kamu tidak niat, tapi karena begitulah cara kerja godaan.
+
+Yang tetap bisa kamu pakai untuk mengecek diri sendiri, tanpa kunci jawaban:
+
+```bash
+python exercises/cp2_rpeak_bpm.py            # cetak LULUS / BELUM LULUS vs nilai acuan
+python exercises/cp2_rpeak_bpm.py --ppg      # uji juga di sinyal PPG
+python tools/uji_cepat.py                    # pemeriksaan menyeluruh isi repo
+```
+
+`data/reference_bpm.csv` berisi BPM acuan kedelapan dataset, jadi kebenaran kodemu bisa diverifikasi angka per angka — tanpa perlu mengintip.
+
+**Setelah 22 Agustus 2026**, folder `solutions/` akan muncul di repo ini berisi dua implementasi (manual dan versi `scipy.signal.find_peaks`) plus tabel pembanding di seluruh dataset. Waktu itu, bandingkan pendekatanmu dengan keduanya; itu bagian belajar yang paling tajam.
 
 ## Kalau instalasi lokal bermasalah
 
@@ -146,7 +161,7 @@ Tiga workflow GitHub Actions, dan semuanya ada gunanya buat kamu:
 
 | Workflow | Kapan jalan | Yang dijaga |
 | --- | --- | --- |
-| **Uji Kode** | tiap push & pull request | Dataset tetap deterministik, BPM semua berkas masih akurat, kasus tepi tidak melempar exception, dan live demo tetap jalan walau data MIT-BIH belum ada |
+| **Uji Kode** | tiap push & pull request | Dataset tetap deterministik, fungsi bawaan dan fitur HRV berperilaku benar, kasus tepi tidak melempar exception, dan live demo tetap jalan walau data MIT-BIH belum ada |
 | **Uji Environment** | saat `requirements.txt` berubah + tiap Senin | Instal bersih di Windows, macOS, dan Linux; `check_env.py` harus mencetak `ENVIRONMENT SIAP` |
 | **Paket Rilis** | saat tag `v*` didorong | Merakit ZIP siap unggah ke Google Drive HMTB dan menerbitkan GitHub Release |
 
@@ -211,10 +226,10 @@ Tiga jebakan yang pasti kamu temui — frekuensi cuplik (MIT-BIH 360 Hz, dataset
 
 Default `persentil=95` bukan tebakan. Persentil 98 lulus di tujuh berkas EKG tapi gagal di `data/ppg_sample.csv`: BPM terbaca 67,60 padahal acuannya 87,92 — **tanpa pesan error apa pun**. Persentil 95 diuji pada delapan berkas dengan refractory 0,20–0,40 s, selisih maksimumnya 0,04 BPM.
 
-Lihat sendiri bedanya:
+Lihat sendiri bedanya, pakai kodemu sendiri:
 
 ```bash
-python solutions/signal_utils_solution.py     # setelah sesi selesai
+python exercises/cp2_rpeak_bpm.py --ppg --persentil 95
 python exercises/cp2_rpeak_bpm.py --ppg --persentil 98
 ```
 
