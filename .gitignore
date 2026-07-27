@@ -1,10 +1,26 @@
+# Environment
 .venv/
+venv/
+env/
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
 .ipynb_checkpoints/
-.DS_Store
+
+# Data nyata yang diunduh dari PhysioNet (jangan pernah di-commit)
+data/real/
+*.dat
+*.hea
+*.atr
+*.qrs
+
+# Editor dan OS
 .vscode/
-data/*.csv
-data/kpp/*.csv
-notebooks/*.ipynb
-output/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml

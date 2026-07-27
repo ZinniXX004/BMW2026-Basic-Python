@@ -1,0 +1,9 @@
+# Dependensi TAMBAHAN untuk jalur dataset nyata PhysioNet.
+# JANGAN dipasang saat sesi hari-H. Sesi memakai dataset sintetis di data/.
+# Pasang hanya jika kamu mengerjakan bonus KPP atau eksplorasi mandiri:
+#
+#     pip install -r requirements-physionet.txt
+#
+# Versi wfdb 4.1.0 adalah rilis yang diterbitkan PhysioNet sebagai
+# "Waveform Database Software Package (WFDB) for Python v4.1.0".
+wfdb==4.1.0
