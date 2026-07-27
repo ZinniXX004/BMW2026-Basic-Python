@@ -17,6 +17,8 @@ Himpunan Mahasiswa Teknik Biomedik ITS
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.35.0-FF4B4B?logo=streamlit&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-5.22.0-3F4F75?logo=plotly&logoColor=white)
 
+![Tes](https://img.shields.io/badge/tes-pytest-0A9EDC?logo=pytest&logoColor=white)
+![Gaya kode](https://img.shields.io/badge/gaya%20kode-Ruff-D7FF64?logo=ruff&logoColor=black)
 ![Dataset](https://img.shields.io/badge/dataset-sintetis%20%2B%20MIT--BIH-2C7A4B)
 ![Lisensi data](https://img.shields.io/badge/lisensi%20data-ODC--BY%201.0-lightgrey)
 ![Hari-H](https://img.shields.io/badge/hari--H-22%20Agustus%202026-orange)
@@ -80,6 +82,8 @@ BMW2026-Basic-Python/
 ├── check_env.py                 cek environment, cetak SIAP / BELUM SIAP
 ├── requirements.txt             versi terpaku, wajib dipakai
 ├── requirements-physionet.txt   hanya untuk jalur PhysioNet (opsional)
+├── requirements-dev.txt         pytest + Ruff, opsional (buat yang mau kirim PR)
+├── pyproject.toml               setelan Ruff & pytest, tidak mengubah cara latihan dijalankan
 ├── .gitattributes               normalisasi akhir baris lintas OS
 │
 ├── .github/
@@ -90,7 +94,7 @@ BMW2026-Basic-Python/
 │   │   ├── 02-pertanyaan-materi.yml form tanya konsep & KPP
 │   │   └── config.yml               pintasan ke SETUP, TROUBLESHOOTING, KPP
 │   └── workflows/
-│       ├── uji-kode.yml         uji tiap push: dataset, fungsi inti, kasus tepi
+│       ├── uji-kode.yml         uji tiap push: dataset, fungsi inti, pytest, kasus tepi
 │       ├── uji-environment.yml  instal bersih di Windows/macOS/Linux
 │       └── rilis.yml            tag v* → ZIP + GitHub Release otomatis
 │
@@ -116,6 +120,10 @@ BMW2026-Basic-Python/
 ├── src/
 │   ├── signal_utils.py          fungsi inti, berisi TODO CP2-a/b/c
 │   └── app_dashboard.py         dashboard Streamlit + Plotly, TODO CP3-a/b
+│
+├── tests/
+│   ├── test_fungsi_dasar.py     24 test fungsi yang sudah jadi — harus hijau sejak awal
+│   └── test_cp2_progres.py      10 penanda kemajuan CP2: xfail → XPASS kalau kodemu benar
 │
 ├── demo/
 │   └── live_demo_mitbih.py      demo panggung MIT-BIH, aman tanpa internet
@@ -147,6 +155,38 @@ python tools/uji_cepat.py                    # pemeriksaan menyeluruh isi repo
 
 **Setelah 22 Agustus 2026**, folder `solutions/` akan muncul di repo ini berisi dua implementasi (manual dan versi `scipy.signal.find_peaks`) plus tabel pembanding di seluruh dataset. Waktu itu, bandingkan pendekatanmu dengan keduanya; itu bagian belajar yang paling tajam.
 
+## Test otomatis: cara lain melihat kemajuanmu
+
+Selain `tools/uji_cepat.py`, repo ini punya test versi `pytest`. Sifatnya opsional — kalau kamu cuma mau ikut sesi, lewati saja bagian ini.
+
+```bash
+pip install -r requirements-dev.txt
+pytest -v
+```
+
+Dua berkas dengan peran berbeda:
+
+- `tests/test_fungsi_dasar.py` — menguji fungsi yang **sudah** jadi (`muat_sinyal`, `potong_window`, `normalisasi_zscore`, SDNN, label HR, kasus tepi). Semuanya harus hijau sejak instalasimu beres. Kalau ada yang merah di sini, yang salah environment atau dataset, bukan jawabanmu.
+- `tests/test_cp2_progres.py` — penanda kemajuan CP2. Semua test-nya ditandai `xfail`, jadi statusnya begini:
+
+| Status | Artinya |
+| --- | --- |
+| `xfail` | TODO CP2 belum dikerjakan. Normal, bukan kegagalan. |
+| `XPASS` | Detektormu sudah benar. Ini yang kita tuju. |
+
+Jadi target CP2-mu bisa dibaca sesederhana ini: **ubah sepuluh `xfail` jadi `XPASS`**. Karena pakai `xfail`, `pytest` tidak akan pernah merah cuma karena latihanmu belum selesai.
+
+Mau sekalian merapikan gaya penulisan kode?
+
+```bash
+ruff check .          # lihat temuan
+ruff check --fix .    # perbaiki yang bisa diperbaiki otomatis
+ruff format .         # rapikan format
+```
+
+> [!NOTE]
+> Di CI, pemeriksaan gaya kode **tidak memblokir**. Kerangka latihan memang belum rapi, dan PR-mu tidak akan ditolak cuma karena spasi atau urutan impor. Hasilnya tetap muncul di log sebagai saran.
+
 ## Kalau instalasi lokal bermasalah
 
 Urutan cadangannya begini:
@@ -161,7 +201,7 @@ Tiga workflow GitHub Actions, dan semuanya ada gunanya buat kamu:
 
 | Workflow | Kapan jalan | Yang dijaga |
 | --- | --- | --- |
-| **Uji Kode** | tiap push & pull request | Dataset tetap deterministik, fungsi bawaan dan fitur HRV berperilaku benar, kasus tepi tidak melempar exception, dan live demo tetap jalan walau data MIT-BIH belum ada |
+| **Uji Kode** | tiap push & pull request | Dataset tetap deterministik, fungsi bawaan dan fitur HRV berperilaku benar (`pytest` + `tools/uji_cepat.py`), kasus tepi tidak melempar exception, live demo tetap jalan walau data MIT-BIH belum ada, dan gaya kode dilaporkan tanpa memblokir |
 | **Uji Environment** | saat `requirements.txt` berubah + tiap Senin | Instal bersih di Windows, macOS, dan Linux; `check_env.py` harus mencetak `ENVIRONMENT SIAP` |
 | **Paket Rilis** | saat tag `v*` didorong | Merakit ZIP siap unggah ke Google Drive HMTB dan menerbitkan GitHub Release |
 
