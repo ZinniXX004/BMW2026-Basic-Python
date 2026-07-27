@@ -1,21 +1,23 @@
 name: Uji Kode
 
-# Jalan setiap kali ada perubahan. Tujuannya sederhana: kalau ada yang rusak,
-# kita tahu hari ini, bukan pagi hari-H di depan 120 orang.
+# Catatan: uji akurasi BPM yang memerlukan kunci jawaban TIDAK dijalankan di
+# sini, karena kunci jawaban sengaja tidak disimpan di repo peserta sampai sesi
+# simulasi selesai. Uji itu hidup di repo internal pemateri
+# (BMW2026-Basic-Python-Pemateri, workflow "Uji Kunci Jawaban").
 
 on:
   push:
     branches: [main]
-    paths-ignore: ['**.md']
+    paths-ignore:
+      - '**.md'
   pull_request:
   workflow_dispatch:
 
 jobs:
   uji:
-    name: Dataset + deteksi R-peak
     runs-on: ubuntu-latest
     steps:
-      - name: Ambil repo
+      - name: Ambil kode
         uses: actions/checkout@v4
 
       - name: Siapkan Python 3.11
@@ -25,35 +27,32 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
-      - name: Pasang dependensi terpaku
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      - name: Pasang dependensi
+        run: pip install -r requirements.txt
 
-      - name: Semua berkas Python harus bisa dikompilasi
-        run: python -m compileall -q data demo exercises solutions src tools
+      - name: Semua berkas Python bisa dikompilasi
+        run: python -m compileall -q data demo exercises src tools
 
       - name: Bangkitkan dataset sintetis
         run: python data/make_dataset.py
 
-      - name: Dataset wajib deterministik
-        # Kalau langkah ini merah, berarti generator berubah perilaku dan nilai
-        # acuan CP2 tidak lagi sah. Jangan diabaikan.
-        run: |
-          git diff --exit-code -- \
-            data/ecg_sample.csv \
-            data/ppg_sample.csv \
-            data/reference_bpm.csv \
-            data/kpp
+      - name: Dataset harus deterministik
+        run: git diff --exit-code -- data/ecg_sample.csv data/ppg_sample.csv data/reference_bpm.csv data/kpp
 
-      - name: Uji cepat (akurasi BPM, SDNN, kasus tepi, jebakan fs)
+      - name: Uji cepat repositori peserta
         run: python tools/uji_cepat.py
 
-      - name: Kunci jawaban vs scipy
-        run: python solutions/signal_utils_solution.py
-
-      - name: Live demo harus tetap jalan tanpa data MIT-BIH
-        # Membuktikan jalur cadangan demo panggung benar-benar aman.
+      - name: Live demo tetap jalan tanpa data MIT-BIH
         env:
           MPLBACKEND: Agg
         run: python demo/live_demo_mitbih.py --tanpa-gambar
+
+      - name: Kunci jawaban tidak boleh bocor sebelum sesi
+        run: |
+          if [ -d solutions ]; then
+            echo "Folder solutions/ ada di repo peserta."
+            echo "Ini hanya boleh terjadi setelah sesi simulasi 22 Agustus 2026 selesai."
+            echo "Kalau sesi belum lewat, batalkan commit tersebut."
+          else
+            echo "Aman: kunci jawaban masih di repo pemateri."
+          fi
