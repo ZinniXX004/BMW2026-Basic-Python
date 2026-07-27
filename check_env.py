@@ -1,0 +1,105 @@
+"""Verifikasi environment untuk BMW Basic 2026 - Materi I (Python).
+
+Jalankan dari folder akar repositori:
+
+    python check_env.py
+
+Skrip ini memeriksa versi interpreter, keberadaan dan versi pustaka yang
+dipatok, serta ketersediaan dataset. Keluaran akhir harus 'ENVIRONMENT SIAP'.
+"""
+
+from __future__ import annotations
+
+import importlib
+import pathlib
+import sys
+
+TARGET_PYTHON = (3, 11)
+
+EXPECTED = {
+    "numpy": "1.26.4",
+    "pandas": "2.2.2",
+    "matplotlib": "3.8.4",
+    "scipy": "1.13.1",
+    "plotly": "5.22.0",
+    "streamlit": "1.35.0",
+}
+
+DATA_FILES = [
+    "data/ecg_sample.csv",
+    "data/ppg_sample.csv",
+    "data/reference_bpm.csv",
+]
+
+
+def check_python() -> list[str]:
+    problems: list[str] = []
+    major, minor = sys.version_info[:2]
+    print(f"Python            : {sys.version.split()[0]}")
+    print(f"Interpreter       : {sys.executable}")
+    if (major, minor) != TARGET_PYTHON:
+        problems.append(
+            f"Versi Python {major}.{minor} bukan target 3.11. "
+            "Pustaka yang dipatok belum diuji di versi ini."
+        )
+    if ".venv" not in sys.executable.replace("\\\\", "/"):
+        problems.append(
+            "Interpreter tampaknya bukan dari .venv. Aktifkan virtual environment "
+            "atau pilih interpreter .venv di VS Code."
+        )
+    return problems
+
+
+def check_packages() -> list[str]:
+    problems: list[str] = []
+    print("\nPustaka:")
+    for name, expected in EXPECTED.items():
+        try:
+            module = importlib.import_module(name)
+        except ImportError:
+            print(f"  {name:<12} TIDAK TERPASANG")
+            problems.append(f"{name} belum terpasang. Jalankan: pip install -r requirements.txt")
+            continue
+        found = getattr(module, "__version__", "tidak diketahui")
+        status = "ok" if found == expected else f"beda (diharapkan {expected})"
+        print(f"  {name:<12} {found:<10} {status}")
+        if found != expected:
+            problems.append(
+                f"{name} versi {found}, diharapkan {expected}. "
+                "Perbedaan versi dapat mengubah perilaku pada sesi simulasi."
+            )
+    return problems
+
+
+def check_data() -> list[str]:
+    problems: list[str] = []
+    print("\nDataset:")
+    for relative in DATA_FILES:
+        path = pathlib.Path(relative)
+        if path.exists():
+            print(f"  {relative:<28} ada ({path.stat().st_size // 1024} KB)")
+        else:
+            print(f"  {relative:<28} HILANG")
+            problems.append(f"{relative} belum ada. Jalankan: python data/make_dataset.py")
+    return problems
+
+
+def main() -> int:
+    print("=" * 62)
+    print("BMW Basic 2026 - Materi I | Verifikasi environment")
+    print("=" * 62)
+    problems = check_python() + check_packages() + check_data()
+    print("-" * 62)
+    if problems:
+        print("ENVIRONMENT BELUM SIAP. Masalah yang ditemukan:\n")
+        for index, problem in enumerate(problems, start=1):
+            print(f"  {index}. {problem}")
+        print("\nBaca TROUBLESHOOTING.md, lalu jalankan ulang skrip ini.")
+        return 1
+    print("ENVIRONMENT SIAP")
+    print("Simpan tangkapan layar keluaran ini sebagai bukti persiapan.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

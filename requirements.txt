@@ -1,0 +1,11 @@
+# BMW Basic 2026 - Materi I (Python)
+# Versi dipatok agar seluruh peserta dan pemateri berada pada perilaku yang sama.
+# Target interpreter: Python 3.11.9 (python.org installer, bukan Microsoft Store)
+
+numpy==1.26.4
+pandas==2.2.2
+matplotlib==3.8.4
+scipy==1.13.1
+plotly==5.22.0
+streamlit==1.35.0
+jupyter==1.0.0
