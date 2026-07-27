@@ -3,6 +3,11 @@ name: Uji Environment
 # Ini versi otomatis dari "uji clean install di 3 mesin" yang ada di timeline
 # persiapan. Kalau kombinasi versi di requirements.txt bermasalah di salah satu
 # sistem operasi, kita tahu dari sini - tanpa perlu meminjam laptop siapa pun.
+#
+# Catatan YAML: perintah yang DIMULAI dengan tanda kutip ganda tidak boleh
+# ditulis inline (run: "$PY" skrip.py), karena YAML membacanya sebagai skalar
+# terkutip yang lalu diikuti teks liar. Semua langkah di bawah memakai block
+# scalar (run: |) supaya isinya diteruskan apa adanya ke shell.
 
 on:
   push:
@@ -52,12 +57,15 @@ jobs:
 
       - name: Bangkitkan dataset
         shell: bash
-        run: "$PY" data/make_dataset.py
+        run: |
+          "$PY" data/make_dataset.py
 
       - name: Jalankan check_env.py (skrip yang sama dipakai peserta)
         shell: bash
-        run: "$PY" check_env.py
+        run: |
+          "$PY" check_env.py
 
       - name: Uji cepat di environment bersih
         shell: bash
-        run: "$PY" tools/uji_cepat.py
+        run: |
+          "$PY" tools/uji_cepat.py
