@@ -1,0 +1,66 @@
+name: "Lapor error teknis"
+description: "Kodenya error, environment tidak jalan, atau hasilnya aneh. Isi form ini."
+title: "[Error] "
+labels: ["error-teknis"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Sebelum lanjut, cek dulu **TROUBLESHOOTING.md** - enam error paling sering sudah ada solusinya di situ.
+        Kalau tetap mentok, isi form ini. Semakin lengkap, semakin cepat kami bisa bantu.
+
+  - type: checkboxes
+    id: prasyarat
+    attributes:
+      label: Yang sudah kamu coba
+      options:
+        - label: Sudah baca TROUBLESHOOTING.md
+          required: true
+        - label: Sudah menjalankan `python check_env.py`
+        - label: Sudah memastikan virtual environment aktif
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistem operasi
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Linux
+        - Google Colab
+    validations:
+      required: true
+
+  - type: input
+    id: versi-python
+    attributes:
+      label: Versi Python
+      description: "Hasil dari `python --version`"
+      placeholder: "Python 3.11.9"
+    validations:
+      required: true
+
+  - type: input
+    id: perintah
+    attributes:
+      label: Perintah yang kamu jalankan
+      placeholder: "python exercises/cp2_rpeak_bpm.py"
+    validations:
+      required: true
+
+  - type: textarea
+    id: pesan-error
+    attributes:
+      label: Pesan error lengkap
+      description: "Tempel apa adanya, jangan diringkas. Baris terakhir biasanya yang paling penting."
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: keluaran-check-env
+    attributes:
+      label: Keluaran `python check_env.py` (opsional tapi sangat membantu)
+      render: text

@@ -1,0 +1,7 @@
+# Semua perubahan ditinjau pemateri Materi I.
+*       @ZinniXX004
+
+# Bagian yang paling rawan: mengubah ini berarti mengubah nilai acuan CP2
+# dan seluruh rubrik KPP ikut terpengaruh.
+/data/make_dataset.py   @ZinniXX004
+/data/reference_bpm.csv  @ZinniXX004

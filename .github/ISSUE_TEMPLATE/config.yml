@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Panduan instalasi
+    url: https://github.com/ZinniXX004/BMW2026-Basic-Python/blob/main/SETUP.md
+    about: Langkah instalasi lengkap untuk Windows, macOS, dan Linux.
+  - name: Enam error paling sering
+    url: https://github.com/ZinniXX004/BMW2026-Basic-Python/blob/main/TROUBLESHOOTING.md
+    about: Cek di sini dulu sebelum membuat issue - kemungkinan besar sudah ada solusinya.
+  - name: Instruksi dan rubrik KPP
+    url: https://github.com/ZinniXX004/BMW2026-Basic-Python/blob/main/kpp/INSTRUKSI_KPP.md
+    about: Deliverable, format berkas, bobot nilai, dan tenggat pengumpulan.

@@ -1,0 +1,40 @@
+name: "Pertanyaan materi"
+description: "Bingung soal konsep, algoritma, fisiologi sinyal, atau KPP."
+title: "[Tanya] "
+labels: ["pertanyaan"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Pertanyaan yang bagus itu aset. Kalau jawabannya berguna untuk banyak orang,
+        kami pindahkan ke bagian FAQ supaya angkatan berikutnya juga kebantu.
+
+  - type: dropdown
+    id: topik
+    attributes:
+      label: Topik
+      options:
+        - Sintaks Python dasar
+        - NumPy / Pandas
+        - Fisiologi PQRST atau PPG
+        - Deteksi R-peak dan BPM
+        - Dashboard Streamlit
+        - Dataset PhysioNet / MIT-BIH
+        - KPP dan penilaian
+        - Lainnya
+    validations:
+      required: true
+
+  - type: textarea
+    id: pertanyaan
+    attributes:
+      label: Pertanyaanmu
+      description: "Sertakan potongan kode atau angka hasil kalau ada."
+    validations:
+      required: true
+
+  - type: textarea
+    id: dugaan
+    attributes:
+      label: Dugaanmu sendiri (opsional)
+      description: "Menuliskan dugaan membuat jawabannya jauh lebih nyantol. Salah pun tidak masalah."

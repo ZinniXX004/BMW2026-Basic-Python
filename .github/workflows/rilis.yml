@@ -1,0 +1,57 @@
+name: Paket Rilis
+
+# Dorong tag v2026.1 dan workflow ini membuat ZIP siap unggah ke Google Drive
+# HMTB sekaligus GitHub Release. Tidak perlu lagi zip manual.
+#
+#   git tag -a v2026.1 -m "Materi I BMW Basic 2026"
+#   git push origin v2026.1
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  paket:
+    name: Bangun ZIP dan terbitkan release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil repo
+        uses: actions/checkout@v4
+
+      - name: Siapkan Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bangkitkan dataset agar ZIP langsung siap pakai
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas
+          python data/make_dataset.py
+
+      - name: Rakit ZIP
+        run: |
+          NAMA="BMW2026-Basic-Python-${GITHUB_REF_NAME}"
+          mkdir -p "/tmp/${NAMA}"
+          rsync -a \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '__pycache__' \
+            --exclude '.venv' \
+            --exclude 'data/real' \
+            ./ "/tmp/${NAMA}/"
+          (cd /tmp && zip -qr "${NAMA}.zip" "${NAMA}")
+          echo "BERKAS_ZIP=/tmp/${NAMA}.zip" >> "$GITHUB_ENV"
+          ls -lh "/tmp/${NAMA}.zip"
+
+      - name: Terbitkan release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" "${BERKAS_ZIP}" \
+            --title "BMW Basic 2026 - Materi I (Python) ${GITHUB_REF_NAME}" \
+            --notes "Paket materi lengkap: berkas latihan, dataset sintetis, kunci jawaban, panduan setup, dan instruksi KPP. ZIP di bawah bisa langsung diunggah ke Google Drive HMTB untuk peserta yang kesulitan memakai git."

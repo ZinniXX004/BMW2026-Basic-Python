@@ -1,0 +1,63 @@
+name: Uji Environment
+
+# Ini versi otomatis dari "uji clean install di 3 mesin" yang ada di timeline
+# persiapan. Kalau kombinasi versi di requirements.txt bermasalah di salah satu
+# sistem operasi, kita tahu dari sini - tanpa perlu meminjam laptop siapa pun.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - requirements.txt
+      - check_env.py
+      - .github/workflows/uji-environment.yml
+  schedule:
+    # Setiap Senin 01.00 UTC (08.00 WIB). Menangkap kasus paket ditarik dari PyPI.
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+
+jobs:
+  instal-bersih:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.11']
+        include:
+          - os: ubuntu-latest
+            python: '3.12'
+    steps:
+      - name: Ambil repo
+        uses: actions/checkout@v4
+
+      - name: Siapkan Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Buat virtual environment dan pasang dependensi
+        shell: bash
+        run: |
+          python -m venv .venv
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            PY=".venv/Scripts/python.exe"
+          else
+            PY=".venv/bin/python"
+          fi
+          echo "PY=$PY" >> "$GITHUB_ENV"
+          "$PY" -m pip install --upgrade pip
+          "$PY" -m pip install -r requirements.txt
+
+      - name: Bangkitkan dataset
+        shell: bash
+        run: "$PY" data/make_dataset.py
+
+      - name: Jalankan check_env.py (skrip yang sama dipakai peserta)
+        shell: bash
+        run: "$PY" check_env.py
+
+      - name: Uji cepat di environment bersih
+        shell: bash
+        run: "$PY" tools/uji_cepat.py

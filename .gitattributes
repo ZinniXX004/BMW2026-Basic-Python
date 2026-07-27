@@ -1,0 +1,16 @@
+# Normalisasi akhir baris. Tanpa ini, peserta Windows sering melihat seluruh
+# berkas "berubah" di git status padahal isinya sama.
+* text=auto eol=lf
+
+*.py   text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.txt  text eol=lf
+
+# Dataset dibangkitkan skrip, bukan ditulis manusia. Tandai supaya tidak
+# mengotori statistik bahasa dan diff review.
+*.csv  text eol=lf linguist-generated=true
+
+*.png  binary
+*.pptx binary
+*.pdf  binary

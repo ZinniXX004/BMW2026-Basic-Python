@@ -1,0 +1,59 @@
+name: Uji Kode
+
+# Jalan setiap kali ada perubahan. Tujuannya sederhana: kalau ada yang rusak,
+# kita tahu hari ini, bukan pagi hari-H di depan 120 orang.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  uji:
+    name: Dataset + deteksi R-peak
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil repo
+        uses: actions/checkout@v4
+
+      - name: Siapkan Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Pasang dependensi terpaku
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Semua berkas Python harus bisa dikompilasi
+        run: python -m compileall -q data demo exercises solutions src tools
+
+      - name: Bangkitkan dataset sintetis
+        run: python data/make_dataset.py
+
+      - name: Dataset wajib deterministik
+        # Kalau langkah ini merah, berarti generator berubah perilaku dan nilai
+        # acuan CP2 tidak lagi sah. Jangan diabaikan.
+        run: |
+          git diff --exit-code -- \
+            data/ecg_sample.csv \
+            data/ppg_sample.csv \
+            data/reference_bpm.csv \
+            data/kpp
+
+      - name: Uji cepat (akurasi BPM, SDNN, kasus tepi, jebakan fs)
+        run: python tools/uji_cepat.py
+
+      - name: Kunci jawaban vs scipy
+        run: python solutions/signal_utils_solution.py
+
+      - name: Live demo harus tetap jalan tanpa data MIT-BIH
+        # Membuktikan jalur cadangan demo panggung benar-benar aman.
+        env:
+          MPLBACKEND: Agg
+        run: python demo/live_demo_mitbih.py --tanpa-gambar
