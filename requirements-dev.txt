@@ -1,0 +1,12 @@
+# Alat pengembang. TIDAK perlu dipasang untuk mengikuti sesi hari-H.
+#
+# Peserta cukup: pip install -r requirements.txt
+# Berkas ini untuk pemateri, asisten, atau siapa pun yang mau mengirim PR.
+#
+#   pip install -r requirements-dev.txt
+#   ruff check .          # periksa gaya penulisan
+#   ruff format --diff .  # lihat usulan format, tanpa mengubah berkas
+#   pytest                # jalankan seluruh test
+
+ruff==0.5.5
+pytest==8.2.2

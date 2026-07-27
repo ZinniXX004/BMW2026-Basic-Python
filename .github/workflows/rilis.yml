@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ambil repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Siapkan Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -54,4 +54,4 @@ jobs:
         run: |
           gh release create "${GITHUB_REF_NAME}" "${BERKAS_ZIP}" \
             --title "BMW Basic 2026 - Materi I (Python) ${GITHUB_REF_NAME}" \
-            --notes "Paket materi lengkap: berkas latihan, dataset sintetis, kunci jawaban, panduan setup, dan instruksi KPP. ZIP di bawah bisa langsung diunggah ke Google Drive HMTB untuk peserta yang kesulitan memakai git."
+            --notes "Paket materi lengkap: berkas latihan, dataset sintetis, panduan setup, test otomatis, dan instruksi KPP. Kunci jawaban CP2 tidak disertakan sebelum sesi simulasi selesai. ZIP di bawah bisa langsung diunggah ke Google Drive HMTB untuk peserta yang kesulitan memakai git."

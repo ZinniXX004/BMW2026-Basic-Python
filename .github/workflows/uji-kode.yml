@@ -18,20 +18,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ambil kode
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Siapkan Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: pip
-          cache-dependency-path: requirements.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
       - name: Pasang dependensi
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
 
       - name: Semua berkas Python bisa dikompilasi
-        run: python -m compileall -q data demo exercises src tools
+        run: python -m compileall -q data demo exercises src tests tools
+
+      # Sengaja tidak memblokir. Kerangka latihan memang belum rapi, dan PR
+      # peserta tidak boleh merah cuma karena spasi. Hasilnya tetap terbaca
+      # di log dan di ringkasan run.
+      - name: Gaya penulisan kode (laporan saja, tidak memblokir)
+        continue-on-error: true
+        run: ruff check --output-format=github .
 
       - name: Bangkitkan dataset sintetis
         run: python data/make_dataset.py
@@ -41,6 +52,11 @@ jobs:
 
       - name: Uji cepat repositori peserta
         run: python tools/uji_cepat.py
+
+      # test_cp2_progres.py memakai xfail, jadi langkah ini tetap hijau selagi
+      # TODO CP2 belum dikerjakan. Yang wajib hijau adalah test_fungsi_dasar.py.
+      - name: pytest
+        run: pytest -q
 
       - name: Live demo tetap jalan tanpa data MIT-BIH
         env:

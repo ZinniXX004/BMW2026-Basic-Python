@@ -1,0 +1,30 @@
+# Konfigurasi alat pengembang untuk repo ini.
+#
+# Berkas ini TIDAK mengubah cara peserta menjalankan latihan. Ia hanya dibaca
+# oleh Ruff (linter) dan pytest (test) kalau kamu memasang requirements-dev.txt.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv", "data/real", "notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# E501 (baris terlalu panjang) sengaja dimatikan: banyak komentar penjelasan di
+# materi ini memang panjang, dan memotongnya justru membuat penjelasan patah.
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# Kerangka latihan memang sengaja "belum benar": ada argumen yang belum dipakai,
+# loop kosong, dan variabel yang menunggu diisi peserta. Jangan dihukum linter.
+"src/signal_utils.py" = ["ARG001", "B007", "F841"]
+"src/app_dashboard.py" = ["F841"]
+"exercises/*" = ["E402", "F841"]
+"tests/*" = ["E402"]
+"tools/*" = ["E402"]
+"demo/*" = ["E402"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra"
