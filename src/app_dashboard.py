@@ -25,6 +25,8 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from src.signal_utils import (
+    PERSENTIL_DEFAULT,
+    REFRACTORY_DEFAULT,
     find_r_peaks,
     hitung_bpm,
     hitung_sdnn_ms,
@@ -40,25 +42,38 @@ st.caption(
     "diagnostik. Jangan dipakai untuk keputusan medis."
 )
 
+
+def daftar_berkas() -> list[str]:
+    pilihan = ["data/ecg_sample.csv"]
+    pilihan += sorted(str(path) for path in pathlib.Path("data/kpp").glob("*.csv"))
+    demo = pathlib.Path("data/demo/mitdb_100_250hz.csv")
+    if demo.exists():
+        pilihan.append(str(demo))
+    return pilihan
+
+
 with st.sidebar:
     st.header("Parameter")
-    berkas = st.selectbox(
-        "Berkas sinyal",
-        options=["data/ecg_sample.csv"] + sorted(
-            str(path) for path in pathlib.Path("data/kpp").glob("*.csv")
-        ),
-    )
-    persentil = st.slider("Persentil ambang", 90.0, 99.5, 98.0, 0.5)
-    refractory = st.slider("Refractory period (s)", 0.15, 0.40, 0.25, 0.01)
+    berkas = st.selectbox("Berkas sinyal", options=daftar_berkas())
+    persentil = st.slider("Persentil ambang", 85.0, 99.5, PERSENTIL_DEFAULT, 0.5)
+    refractory = st.slider("Refractory period (s)", 0.15, 0.40, REFRACTORY_DEFAULT, 0.01)
     st.markdown(
-        "Turunkan persentil untuk melihat bagaimana derau mulai terdeteksi "
-        "sebagai puncak. Perkecil refractory period untuk melihat satu QRS "
-        "terhitung ganda."
+        "Naikkan persentil ke 98 dan perhatikan bahwa jumlah puncak justru "
+        "berkurang: ambang terlalu tinggi melewatkan denyut, tanpa pesan error. "
+        "Turunkan persentil dan derau mulai terdeteksi sebagai puncak. "
+        "Perkecil refractory period dan satu QRS terhitung ganda."
     )
 
 frame = pd.read_csv(berkas)
 ekg = frame["ecg_mv"].to_numpy()
 waktu = frame["time_s"].to_numpy()
+
+if "demo" in berkas:
+    st.info(
+        "Berkas ini rekaman manusia sungguhan (MIT-BIH record 100, ODC-BY 1.0), "
+        "sudah diturunkan dari 360 Hz ke 250 Hz. Bandingkan hasilnya dengan "
+        "data/demo/mitdb_100_250hz_acuan.csv yang berasal dari anotasi kardiolog."
+    )
 
 puncak = find_r_peaks(ekg, FS, persentil=persentil, refractory_s=refractory)
 bpm = hitung_bpm(puncak, FS)

@@ -1,4 +1,20 @@
-# Environment
+# Data nyata hasil unduhan TIDAK di-commit: ukurannya besar dan kita ingin
+# peserta mengalami sendiri proses pengambilan data.
+data/real/
+*.dat
+*.hea
+*.atr
+*.qrs
+
+# Pengecualian: data demo panggung SENGAJA di-commit supaya live demo pada
+# hari-H tidak bergantung pada jaringan Teater B. MIT-BIH berlisensi ODC-BY 1.0
+# sehingga redistribusi turunan diizinkan dengan atribusi (lihat ATTRIBUTION.md).
+!data/demo/
+!data/demo/*.csv
+!data/demo/*.md
+data/demo/demo_preview.png
+
+# Virtual environment
 .venv/
 venv/
 env/
@@ -7,16 +23,12 @@ env/
 __pycache__/
 *.py[cod]
 *.egg-info/
+.pytest_cache/
+
+# Notebook
 .ipynb_checkpoints/
 
-# Data nyata yang diunduh dari PhysioNet (jangan pernah di-commit)
-data/real/
-*.dat
-*.hea
-*.atr
-*.qrs
-
-# Editor dan OS
+# Editor dan sistem operasi
 .vscode/
 .idea/
 .DS_Store

@@ -1,6 +1,20 @@
 # BMW Basic 2026 - Materi I (Python)
 # Versi dipatok agar seluruh peserta dan pemateri berada pada perilaku yang sama.
 # Target interpreter: Python 3.11.9 (python.org installer, bukan Microsoft Store)
+#
+# Batasan yang perlu diketahui sebelum mengubah salah satu pin:
+#
+# 1. streamlit 1.35.0 mensyaratkan numpy < 2. Karena itu numpy dipatok di 1.26.4.
+#    Menaikkan numpy ke 2.x tanpa menaikkan streamlit akan merusak dashboard CP3.
+# 2. numpy 1.26.4 dan pandas 2.2.2 TIDAK punya wheel untuk Python 3.13. Kombinasi
+#    ini hanya valid pada Python 3.11 dan 3.12. Jangan pakai Python 3.13.
+# 3. scipy 1.13.1 kompatibel dengan numpy 1.26.4.
+# 4. jupyter adalah metapackage besar (notebook, qtconsole, nbconvert, ipykernel).
+#    Bila instalasinya lambat atau gagal, ganti dengan notebook==7.2.1 saja;
+#    jalur fail-safe hanya membutuhkan kemampuan menjalankan .ipynb.
+# 5. wfdb TIDAK ada di sini dengan sengaja. Ia hanya dibutuhkan untuk jalur
+#    dataset nyata yang opsional, dan hidup terpisah di requirements-physionet.txt
+#    supaya uji instalasi bersih untuk sesi hari-H tidak terpengaruh.
 
 numpy==1.26.4
 pandas==2.2.2

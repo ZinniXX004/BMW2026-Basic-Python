@@ -13,6 +13,20 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+# Nilai default hasil pengujian, bukan tebakan.
+#
+# Persentil 98 (nilai yang dipakai pada versi awal repositori ini) LULUS pada
+# tujuh berkas EKG tetapi GAGAL pada ppg_sample.csv: hanya 11 dari sekitar 14
+# denyut terdeteksi, BPM terbaca 67,60 padahal acuannya 87,92 -- salah 20,32 BPM
+# tanpa satu pun pesan error. Penyebabnya puncak PPG jauh lebih lebar daripada
+# kompleks QRS, sehingga satu denyut menyumbang banyak sampel tinggi dan ambang
+# persentil 98 terangkat melewati denyut beramplitudo rendah.
+#
+# Persentil 95 diuji pada seluruh delapan berkas dataset repositori ini dengan
+# refractory 0,20 s hingga 0,40 s: selisih maksimum 0,04 BPM.
+PERSENTIL_DEFAULT = 95.0
+REFRACTORY_DEFAULT = 0.25
+
 
 def muat_sinyal(path: str, kolom_nilai: str) -> tuple[np.ndarray, np.ndarray]:
     """Muat CSV sinyal dan kembalikan (waktu, nilai) sebagai array NumPy.
@@ -51,8 +65,8 @@ def normalisasi_zscore(sinyal: np.ndarray) -> np.ndarray:
 def find_r_peaks(
     sinyal: np.ndarray,
     fs: int,
-    persentil: float = 98.0,
-    refractory_s: float = 0.25,
+    persentil: float = PERSENTIL_DEFAULT,
+    refractory_s: float = REFRACTORY_DEFAULT,
 ) -> np.ndarray:
     """Deteksi indeks R-Peak pada sinyal EKG.
 
@@ -65,6 +79,11 @@ def find_r_peaks(
          refractory_s detik. Ini bukan trik numerik, tetapi konsekuensi periode
          refrakter miokardium; dua depolarisasi ventrikel dalam 250 ms tidak
          mungkin secara fisiologis.
+
+    PERINGATAN PARAMETER: ambang persentil adalah asumsi tentang bentuk sinyal,
+    bukan konstanta universal. Naikkan ke 98 dan detektor ini akan melewatkan
+    denyut pada sinyal berpuncak lebar seperti PPG. Lihat komentar di bagian
+    atas modul untuk angka pengujiannya.
 
     Kembalian: array indeks sampel puncak, urut naik.
     """
@@ -97,6 +116,9 @@ def hitung_bpm(puncak: np.ndarray, fs: int) -> float:
     BPM = 60 dibagi rata-rata interval RR.
     Kurang dari dua puncak berarti laju tidak dapat dihitung; kembalikan NaN
     daripada menghasilkan angka yang menyesatkan.
+
+    PERINGATAN: fs di sini WAJIB fs sinyal yang sebenarnya. Memakai fs yang
+    salah tidak memicu error apa pun, hanya angka yang salah secara sistematis.
     """
     if puncak.size < 2:
         return float("nan")
