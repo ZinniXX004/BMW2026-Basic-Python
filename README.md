@@ -19,6 +19,7 @@ Himpunan Mahasiswa Teknik Biomedik ITS
 
 ![Tes](https://img.shields.io/badge/tes-pytest-0A9EDC?logo=pytest&logoColor=white)
 ![Gaya kode](https://img.shields.io/badge/gaya%20kode-Ruff-D7FF64?logo=ruff&logoColor=black)
+![Notebook](https://img.shields.io/badge/cadangan-notebook%20siap%20pakai-F37626?logo=jupyter&logoColor=white)
 ![Dataset](https://img.shields.io/badge/dataset-sintetis%20%2B%20MIT--BIH-2C7A4B)
 ![Lisensi data](https://img.shields.io/badge/lisensi%20data-ODC--BY%201.0-lightgrey)
 ![Hari-H](https://img.shields.io/badge/hari--H-22%20Agustus%202026-orange)
@@ -121,6 +122,11 @@ BMW2026-Basic-Python/
 │   ├── signal_utils.py          fungsi inti, berisi TODO CP2-a/b/c
 │   └── app_dashboard.py         dashboard Streamlit + Plotly, TODO CP3-a/b
 │
+├── notebooks/                   ← jalur cadangan, sudah siap dibuka
+│   ├── README.md                cara pakai lokal & di Colab, plus dua jebakan notebook
+│   ├── 01_cp1_load_plot.ipynb   CP1 versi notebook, dipecah per langkah
+│   └── 02_cp2_rpeak_bpm.ipynb   CP2 versi notebook, TODO bisa diisi langsung di sel
+│
 ├── tests/
 │   ├── test_fungsi_dasar.py     24 test fungsi yang sudah jadi — harus hijau sejak awal
 │   └── test_cp2_progres.py      10 penanda kemajuan CP2: xfail → XPASS kalau kodemu benar
@@ -130,7 +136,7 @@ BMW2026-Basic-Python/
 │
 ├── tools/
 │   ├── uji_cepat.py             ~45 pemeriksaan otomatis, dipakai CI
-│   └── build_notebooks.py       ubah latihan jadi .ipynb (jalur fail-safe)
+│   └── build_notebooks.py       bungkus berkas .py jadi notebook (notebooks/otomatis/)
 │
 └── kpp/
     ├── INSTRUKSI_KPP.md         deliverable, format berkas, tenggat
@@ -191,9 +197,11 @@ ruff format .         # rapikan format
 
 Urutan cadangannya begini:
 
-1. **Notebook lokal** — `python tools/build_notebooks.py`, lalu buka di VS Code atau Jupyter.
-2. **Google Colab** — unggah notebook hasil langkah 1, jalankan `!pip install -q plotly` kalau perlu, dan bangkitkan dataset dengan menjalankan `data/make_dataset.py` di sel pertama.
+1. **Notebook lokal** — buka [`notebooks/01_cp1_load_plot.ipynb`](notebooks/01_cp1_load_plot.ipynb) dan [`notebooks/02_cp2_rpeak_bpm.ipynb`](notebooks/02_cp2_rpeak_bpm.ipynb) di VS Code atau Jupyter. Keduanya sudah jadi, tidak perlu dibangkitkan.
+2. **Google Colab** — notebook yang sama, sel pertamanya sudah berisi perintah *bootstrap* (clone repo + bangkitkan dataset). Petunjuk lengkap di [notebooks/README.md](notebooks/README.md).
 3. **Berpasangan** — kerjakan bareng peserta lain yang environment-nya sudah jalan. Checkpoint tetap dihitung, jadi tidak perlu merasa rugi.
+
+Satu hal yang perlu jujur disebut: notebook itu **cadangan, bukan jalur utama**. Sesi hari-H dibawakan dengan VS Code dan berkas `.py`, dan CP3 (dashboard Streamlit) memang tidak bisa dijalankan dari dalam notebook. Jadi tetap usahakan instalasi lokalmu beres sebelum hari-H.
 
 ## Otomasi yang jalan di repo ini
 

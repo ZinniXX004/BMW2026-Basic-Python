@@ -24,9 +24,14 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+.ruff_cache/
 
 # Notebook
 .ipynb_checkpoints/
+
+# Notebook hasil tools/build_notebooks.py. Dua notebook kurasi di notebooks/
+# tetap di-commit; yang di dalam otomatis/ bisa dibangkitkan ulang kapan saja.
+notebooks/otomatis/
 
 # Editor dan sistem operasi
 .vscode/
