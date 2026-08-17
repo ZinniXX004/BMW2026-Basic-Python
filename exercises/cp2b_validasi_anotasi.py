@@ -100,7 +100,7 @@ def main() -> None:
     acuan = np.asarray(
         [
             s - mulai
-            for s, sym in zip(anotasi.sample, anotasi.symbol)
+            for s, sym in zip(anotasi.sample, anotasi.symbol, strict=False)
             if sym in SIMBOL_DENYUT
         ],
         dtype=int,

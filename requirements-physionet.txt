@@ -4,6 +4,14 @@
 #
 #     pip install -r requirements-physionet.txt
 #
-# Versi wfdb 4.1.0 adalah rilis yang diterbitkan PhysioNet sebagai
-# "Waveform Database Software Package (WFDB) for Python v4.1.0".
-wfdb==4.1.0
+# CATATAN (diperbaiki setelah uji langsung): wfdb 4.1.0 mensyaratkan
+# pandas<2.0.0, bentrok dengan pandas==2.2.2 yang dipatok di requirements.txt.
+# Akibatnya "pip install -r requirements-physionet.txt" gagal / mencoba
+# membangun pandas versi lama dari source dan error.
+#
+# wfdb 4.1.2 mensyaratkan pandas>=1.3.0 (tanpa batas atas) sehingga
+# terpasang bersih berdampingan dengan pandas==2.2.2 -- sudah diuji langsung
+# (install sukses, tidak menurunkan/menaikkan versi pandas yang sudah ada).
+# wfdb 4.2.0 ke atas mensyaratkan pandas>=2.2.3, sedikit di atas pin kita,
+# jadi TIDAK dipakai supaya tidak memaksa pandas naik versi.
+wfdb==4.1.2

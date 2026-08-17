@@ -101,7 +101,7 @@ def resample_ke(sinyal: np.ndarray, fs_asal: int, fs_tujuan: int) -> np.ndarray:
 def bpm_dari_anotasi(sampel: np.ndarray, simbol: list[str], fs: int) -> tuple[float, int]:
     """BPM acuan dari anotasi denyut manusia. Inilah ground truth sebenarnya."""
     denyut = np.asarray(
-        [s for s, sym in zip(sampel, simbol) if sym in SIMBOL_DENYUT], dtype=int
+        [s for s, sym in zip(sampel, simbol, strict=False) if sym in SIMBOL_DENYUT], dtype=int
     )
     if denyut.size < 2:
         return float("nan"), int(denyut.size)

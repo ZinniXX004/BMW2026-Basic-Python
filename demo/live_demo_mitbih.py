@@ -136,7 +136,7 @@ def siapkan() -> int:
     )
 
     denyut = np.asarray(
-        [s for s, sym in zip(anotasi.sample, anotasi.symbol) if sym in SIMBOL_DENYUT],
+        [s for s, sym in zip(anotasi.sample, anotasi.symbol, strict=False) if sym in SIMBOL_DENYUT],
         dtype=int,
     )
     bpm_acuan = (

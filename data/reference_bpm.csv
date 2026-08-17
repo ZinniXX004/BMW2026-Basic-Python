@@ -1,0 +1,9 @@
+file,jenis,fs_hz,bpm_acuan
+ecg_sample.csv,ECG,250,72.21
+ppg_sample.csv,PPG,250,87.92
+kpp/subject_00.csv,ECG,250,51.88
+kpp/subject_01.csv,ECG,250,62.29
+kpp/subject_02.csv,ECG,250,69.91
+kpp/subject_03.csv,ECG,250,83.21
+kpp/subject_04.csv,ECG,250,95.44
+kpp/subject_05.csv,ECG,250,106.5
