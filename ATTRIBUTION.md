@@ -6,9 +6,14 @@ Berkas ini wajib dibaca sebelum memakai dataset nyata dari PhysioNet, dan wajib 
 
 Seluruh berkas di `data/` yang dihasilkan `data/make_dataset.py` adalah **sinyal sintetis** yang dibangkitkan secara numerik dengan seed tetap. Tidak ada rekaman pasien, tidak ada data pihak ketiga, tidak ada persoalan privasi maupun lisensi. Berkas-berkas itu boleh disalin dan diubah tanpa syarat.
 
-## 2. Data nyata PhysioNet (opsional, tidak dibundel)
+## 2. Data nyata PhysioNet
 
-Repositori ini **tidak** menyimpan berkas PhysioNet. `data/fetch_physionet.py` mengunduhnya langsung dari server PhysioNet ke folder lokal yang diabaikan Git. Alasannya bukan lisensi (ODC-BY sebenarnya mengizinkan redistribusi), melainkan agar setiap peserta melewati langkah provenance secara sadar: tahu dari mana data berasal, siapa yang berhak dikutip, dan lisensi apa yang mengikat.
+Ada dua jalur berbeda, dengan kebijakan bundling yang berbeda pula:
+
+- **`data/fetch_physionet.py`** (opsional, bahan eksplorasi/KPP) mengunduh langsung dari server PhysioNet ke folder lokal `data/real/` yang diabaikan Git — **tidak dibundel**. Alasannya bukan lisensi, melainkan agar setiap peserta melewati langkah provenance secara sadar: tahu dari mana data berasal, siapa yang berhak dikutip, dan lisensi apa yang mengikat.
+- **`data/demo/`** (live demo pemateri) berisi turunan 30 detik dari MIT-BIH record 100 yang **sengaja dibundel dan di-commit** ke repositori ini — supaya demo panggung tidak bergantung pada internet saat presentasi. Ini pengecualian yang disengaja terhadap prinsip "tidak menyimpan berkas PhysioNet" di atas, dan diizinkan penuh oleh lisensi ODC-BY 1.0 (redistribusi turunan dengan atribusi).
+
+Kedua jalur sama-sama tunduk pada kewajiban atribusi di bawah ini.
 
 ### Kewajiban atribusi
 

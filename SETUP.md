@@ -1,6 +1,6 @@
 # SETUP — Environment Materi I
 
-Target: **Python 3.11.9**, virtual environment lokal, VS Code sebagai editor. Selesaikan ini **sebelum** 22 Agustus 2026.
+Target: **Python 3.11 atau 3.12** (3.11.9 direkomendasikan, paling banyak diuji), virtual environment lokal, VS Code sebagai editor. Selesaikan ini **sebelum** 22 Agustus 2026.
 
 ## 0. Prinsip
 
@@ -10,7 +10,7 @@ Target: **Python 3.11.9**, virtual environment lokal, VS Code sebagai editor. Se
 
 ## 1. Windows 10/11
 
-1. Unduh **Python 3.11.9** dari <https://www.python.org/downloads/release/python-3119/> (Windows installer 64-bit).
+1. Unduh **Python 3.11.9** dari <https://www.python.org/downloads/release/python-3119/> (Windows installer 64-bit). Python 3.12 juga didukung kalau sudah terlanjur terpasang.
 2. Pada layar pertama installer, centang **Add python.exe to PATH**. Ini wajib.
 3. Jangan gunakan Python dari Microsoft Store. Versi Store membatasi akses folder dan sering menggagalkan `venv`.
 4. Pasang **VS Code** dari <https://code.visualstudio.com/>, lalu pasang ekstensi **Python** (Microsoft).
@@ -19,7 +19,7 @@ Target: **Python 3.11.9**, virtual environment lokal, VS Code sebagai editor. Se
    ```powershell
    git clone https://github.com/ZinniXX004/BMW2026-Basic-Python.git
    cd BMW2026-Basic-Python
-   python --version          # harus 3.11.9
+   python --version          # harus 3.11.x atau 3.12.x
    python -m venv .venv
    .venv\Scripts\activate    # prompt berubah menjadi (.venv)
    python -m pip install --upgrade pip

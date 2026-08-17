@@ -75,6 +75,8 @@ git add data/demo && git commit -m "Tambah data demo MIT-BIH"
 python demo/live_demo_mitbih.py            # mode panggung, tanpa internet
 ```
 
+Kalau jaringan (mis. Wi-Fi kampus/asrama) memblokir physionet.org langsung, ada jalur cadangan: unduh manual `100.dat`, `100.hea`, `100.atr` dari `https://physionet.org/files/mitdb/1.0.0/` lewat peramban, taruh ketiganya di satu folder, lalu `python demo/live_demo_mitbih.py --siapkan --dari folder_itu/`.
+
 Mode panggung hanya membaca CSV yang sudah di-commit dan **tidak** mengimpor
 `wfdb`. Bila berkasnya hilang, skrip beralih ke data sintetis dengan peringatan
 besar, sehingga demo tidak pernah mati di depan 120 peserta.

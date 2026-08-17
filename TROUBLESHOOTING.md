@@ -69,6 +69,12 @@ Jika browser tidak terbuka otomatis, buka manual alamat yang tercetak di termina
 
 **Solusi:** Pastikan jarak minimum antar puncak sebesar `int(0.25 * fs)` sampel diterapkan sebelum menghitung interval RR. Bandingkan hasilmu dengan `data/reference_bpm.csv`.
 
+## 8. `pip install -r requirements-physionet.txt` gagal / mencoba membangun pandas dari source
+
+**Sebab:** versi `wfdb` yang lebih lama (4.1.0) mensyaratkan `pandas<2.0.0`, bentrok dengan `pandas==2.2.2` yang dipatok di `requirements.txt`. `requirements-physionet.txt` di repo ini sudah dipatok ke `wfdb==4.1.2` (mensyaratkan `pandas>=1.3.0`, tanpa batas atas) yang terpasang bersih berdampingan dengan `pandas==2.2.2`.
+
+**Solusi:** pastikan `requirements-physionet.txt` yang kamu pakai berisi `wfdb==4.1.2`, bukan `4.1.0`. Kalau masih gagal, hapus dulu `pip uninstall wfdb pandas -y` lalu pasang ulang urut: `pip install -r requirements.txt` dulu, baru `pip install -r requirements-physionet.txt`.
+
 ## Masih gagal?
 
 Catat: (1) sistem operasi, (2) output `python check_env.py`, (3) pesan error lengkap. Kirim ketiganya ke panitia Ilprof. Jangan menghapus dan memasang ulang Python tanpa arahan asisten pada hari-H.

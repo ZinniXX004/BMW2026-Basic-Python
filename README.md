@@ -10,7 +10,7 @@ Himpunan Mahasiswa Teknik Biomedik ITS
 [![Uji Kode](https://github.com/ZinniXX004/BMW2026-Basic-Python/actions/workflows/uji-kode.yml/badge.svg)](https://github.com/ZinniXX004/BMW2026-Basic-Python/actions/workflows/uji-kode.yml)
 [![Uji Environment](https://github.com/ZinniXX004/BMW2026-Basic-Python/actions/workflows/uji-environment.yml/badge.svg)](https://github.com/ZinniXX004/BMW2026-Basic-Python/actions/workflows/uji-environment.yml)
 
-![Python](https://img.shields.io/badge/Python-3.11.9-3776AB?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?logo=python&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-1.26.4-013243?logo=numpy&logoColor=white)
 ![pandas](https://img.shields.io/badge/pandas-2.2.2-150458?logo=pandas&logoColor=white)
 ![SciPy](https://img.shields.io/badge/SciPy-1.13.1-8CAAE6?logo=scipy&logoColor=white)
@@ -67,7 +67,7 @@ python check_env.py
 Langkah terakhir harus mencetak `ENVIRONMENT SIAP`. Kalau belum, mampir ke [TROUBLESHOOTING.md](TROUBLESHOOTING.md) dulu, lalu hubungi panitia Ilprof paling lambat H-3. Versi panjangnya ada di [SETUP.md](SETUP.md).
 
 > [!IMPORTANT]
-> Pakai **Python 3.11.9**. `numpy 1.26.4` dan `pandas 2.2.2` belum punya wheel untuk Python 3.13, jadi `pip install` pasti gagal di versi itu. Alasan tiap pin ditulis sebagai komentar di dalam `requirements.txt`.
+> Pakai **Python 3.11 atau 3.12** (3.11.9 paling banyak diuji, tapi 3.12 juga terverifikasi jalan bersih dengan versi pustaka di sini). `numpy 1.26.4` dan `pandas 2.2.2` belum punya wheel untuk Python 3.13, jadi `pip install` pasti gagal di versi itu. Alasan tiap pin ditulis sebagai komentar di dalam `requirements.txt`.
 >
 > Jangan pasang `requirements-physionet.txt` untuk sesi hari-H — itu khusus jalur dataset nyata yang sifatnya opsional.
 
@@ -221,9 +221,6 @@ Mau menjalankan pemeriksaan yang sama di mesin sendiri? Satu perintah:
 python tools/uji_cepat.py
 ```
 
-> [!NOTE]
-> Selama repo masih privat, badge di atas bisa tampil abu-abu bagi orang luar. Setelah repo dipublikkan di H-7, statusnya muncul normal.
-
 ## Cara bertanya biar cepat dibantu
 
 Buka tab **Issues**, pilih formnya:
@@ -244,6 +241,9 @@ pip install -r requirements-physionet.txt
 python demo/live_demo_mitbih.py --siapkan
 git add data/demo && git commit -m "Tambah data demo MIT-BIH"
 ```
+
+> [!NOTE]
+> Repo ini sudah menyertakan `data/demo/` terisi data MIT-BIH asli — pemateri biasanya tidak perlu mengulang langkah di atas. Kalau perlu menyiapkan ulang dan jaringan memblokir physionet.org langsung, unduh manual `100.dat`/`100.hea`/`100.atr` dari <https://physionet.org/files/mitdb/1.0.0/>, taruh di satu folder, lalu `python demo/live_demo_mitbih.py --siapkan --dari folder_itu/`.
 
 Saat presentasi, tanpa internet dan tanpa `wfdb`:
 

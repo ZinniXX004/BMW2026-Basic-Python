@@ -11,12 +11,6 @@ Dua berkas di sini **sudah siap dibuka** — tidak perlu membangkitkan apa pun:
 | `01_cp1_load_plot.ipynb` | CP1: muat CSV, plot 5 detik pertama | [![Buka di Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZinniXX004/BMW2026-Basic-Python/blob/main/notebooks/01_cp1_load_plot.ipynb) |
 | `02_cp2_rpeak_bpm.ipynb` | CP2: deteksi R-peak, BPM, validasi ke acuan | [![Buka di Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZinniXX004/BMW2026-Basic-Python/blob/main/notebooks/02_cp2_rpeak_bpm.ipynb) |
 
-> [!NOTE]
-> Tombol Colab di atas baru berfungsi setelah repo dipublikkan di **H-7
-> (15 Agustus 2026)**. Sebelum itu Colab tidak bisa membaca repo privat, jadi
-> pakai cara manual: unduh berkas `.ipynb`-nya, lalu **File → Upload notebook**
-> di Colab.
-
 ## Cara pakai
 
 **Lokal (VS Code atau Jupyter)**
