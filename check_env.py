@@ -14,7 +14,13 @@ import importlib
 import pathlib
 import sys
 
-TARGET_PYTHON = (3, 11)
+# (3, 11) dan (3, 12) sama-sama diterima -- sudah diuji langsung: numpy 1.26.4,
+# pandas 2.2.2, matplotlib 3.8.4, scipy 1.13.1, plotly 5.22.0, streamlit 1.35.0,
+# dan jupyter 1.0.0 terpasang & berjalan bersih di kedua versi. Python 3.11.9
+# tetap versi yang direkomendasikan di tutorial (paling banyak diuji), tapi
+# peserta/pemateri dengan 3.12 tidak perlu instal ulang Python.
+TARGET_PYTHON_MIN = (3, 11)
+TARGET_PYTHON_MAX = (3, 12)
 
 EXPECTED = {
     "numpy": "1.26.4",
@@ -43,10 +49,10 @@ def check_python() -> list[str]:
     major, minor = sys.version_info[:2]
     print(f"Python            : {sys.version.split()[0]}")
     print(f"Interpreter       : {sys.executable}")
-    if (major, minor) != TARGET_PYTHON:
+    if not (TARGET_PYTHON_MIN <= (major, minor) <= TARGET_PYTHON_MAX):
         problems.append(
-            f"Versi Python {major}.{minor} bukan target 3.11. "
-            "Pustaka yang dipatok belum diuji di versi ini."
+            f"Versi Python {major}.{minor} di luar rentang yang didukung "
+            f"(3.11-3.12). Pustaka yang dipatok belum diuji di versi ini."
         )
     if (major, minor) >= (3, 13):
         problems.append(

@@ -95,8 +95,19 @@ def bpm_dari(puncak: np.ndarray, fs: int) -> float:
     return float(60.0 / np.mean(np.diff(puncak) / fs))
 
 
-def siapkan() -> int:
-    """Unduh dan ekspor data demo. Butuh internet dan paket wfdb."""
+def siapkan(dari_lokal: str | None = None) -> int:
+    """Unduh dan ekspor data demo. Butuh internet dan paket wfdb.
+
+    dari_lokal: kalau diisi (path folder), baca 100.dat/100.hea/100.atr dari
+    folder itu alih-alih mengunduh otomatis lewat pn_dir. Berguna kalau
+    jaringan kampus/asrama memblokir physionet.org secara langsung -- unduh
+    manual 3 berkas itu lewat browser dari:
+      https://physionet.org/files/mitdb/1.0.0/100.dat
+      https://physionet.org/files/mitdb/1.0.0/100.hea
+      https://physionet.org/files/mitdb/1.0.0/100.atr
+    lalu taruh ketiganya di satu folder dan jalankan:
+      python demo/live_demo_mitbih.py --siapkan --dari folder_unduhan/
+    """
     try:
         import wfdb
     except ImportError:
@@ -110,9 +121,24 @@ def siapkan() -> int:
         return 1
 
     n_sampel = FS_ASLI * DURASI_S
-    print(f"Mengunduh MIT-BIH record {REKAMAN}, {DURASI_S} detik pertama ...")
-    rekaman = wfdb.rdrecord(REKAMAN, pn_dir="mitdb", sampfrom=0, sampto=n_sampel)
-    anotasi = wfdb.rdann(REKAMAN, "atr", pn_dir="mitdb", sampfrom=0, sampto=n_sampel)
+
+    if dari_lokal:
+        folder = pathlib.Path(dari_lokal).expanduser().resolve()
+        path_dat = folder / f"{REKAMAN}.dat"
+        path_hea = folder / f"{REKAMAN}.hea"
+        path_atr = folder / f"{REKAMAN}.atr"
+        hilang = [p.name for p in (path_dat, path_hea, path_atr) if not p.is_file()]
+        if hilang:
+            print(f"GAGAL: berkas berikut tidak ditemukan di {folder}: {', '.join(hilang)}")
+            print("Unduh manual dari https://physionet.org/files/mitdb/1.0.0/ lalu coba lagi.")
+            return 1
+        print(f"Membaca record {REKAMAN} dari berkas lokal di {folder} ...")
+        rekaman = wfdb.rdrecord(str(folder / REKAMAN), sampfrom=0, sampto=n_sampel)
+        anotasi = wfdb.rdann(str(folder / REKAMAN), "atr", sampfrom=0, sampto=n_sampel)
+    else:
+        print(f"Mengunduh MIT-BIH record {REKAMAN}, {DURASI_S} detik pertama ...")
+        rekaman = wfdb.rdrecord(REKAMAN, pn_dir="mitdb", sampfrom=0, sampto=n_sampel)
+        anotasi = wfdb.rdann(REKAMAN, "atr", pn_dir="mitdb", sampfrom=0, sampto=n_sampel)
 
     if int(rekaman.fs) != FS_ASLI:
         print(f"PERINGATAN: fs rekaman {rekaman.fs} Hz, bukan {FS_ASLI} Hz yang diasumsikan.")
@@ -255,9 +281,14 @@ def jalankan(tanpa_gambar: bool) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Live demo MIT-BIH untuk BMW Basic 2026.")
     parser.add_argument("--siapkan", action="store_true", help="Unduh data demo (butuh internet + wfdb).")
+    parser.add_argument(
+        "--dari", metavar="FOLDER", default=None,
+        help="Pakai bersama --siapkan: baca 100.dat/100.hea/100.atr dari FOLDER lokal "
+             "alih-alih mengunduh otomatis (untuk jaringan yang memblokir physionet.org).",
+    )
     parser.add_argument("--tanpa-gambar", action="store_true", help="Jangan tampilkan atau simpan grafik.")
     argumen = parser.parse_args()
-    return siapkan() if argumen.siapkan else jalankan(argumen.tanpa_gambar)
+    return siapkan(argumen.dari) if argumen.siapkan else jalankan(argumen.tanpa_gambar)
 
 
 if __name__ == "__main__":
