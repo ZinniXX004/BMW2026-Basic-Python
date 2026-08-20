@@ -74,7 +74,13 @@ def sintesis_ppg(bpm: float, seed: int) -> tuple[np.ndarray, np.ndarray, float]:
 
 def simpan(path: pathlib.Path, t: np.ndarray, sinyal: np.ndarray, kolom: str) -> None:
     frame = pd.DataFrame({"time_s": np.round(t, 5), kolom: np.round(sinyal, 5)})
-    frame.to_csv(path, index=False)
+    # newline="" + lineterminator="\n": paksa akhir baris LF di semua OS.
+    # Tanpa ini, pandas.to_csv menulis CRLF di Windows (translasi newline
+    # bawaan Python text-mode), bentrok dengan .gitattributes (*.csv eol=lf)
+    # dan membuat git status menampilkan semua dataset sebagai "modified"
+    # tepat setelah dibangkitkan, walau isinya identik.
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        frame.to_csv(f, index=False, lineterminator="\n")
 
 
 def main() -> None:
@@ -98,7 +104,8 @@ def main() -> None:
         simpan(kpp_dir / nama, t, ekg, "ecg_mv")
         acuan.append({"file": f"kpp/{nama}", "jenis": "ECG", "fs_hz": FS, "bpm_acuan": round(bpm_acuan, 2)})
 
-    pd.DataFrame(acuan).to_csv(DATA_DIR / "reference_bpm.csv", index=False)
+    with open(DATA_DIR / "reference_bpm.csv", "w", newline="", encoding="utf-8") as f:
+        pd.DataFrame(acuan).to_csv(f, index=False, lineterminator="\n")
 
     print(f"Dataset dibuat di: {DATA_DIR}")
     print(f"fs = {FS} Hz, durasi = {DURASI:.0f} s, jumlah sampel = {int(FS * DURASI)}")

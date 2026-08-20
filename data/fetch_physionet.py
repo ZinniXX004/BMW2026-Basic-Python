@@ -177,9 +177,10 @@ def main() -> None:
     KELUARAN.mkdir(parents=True, exist_ok=True)
     dasar = f"{argumen.db}_{argumen.record}_{argumen.fs_target}hz"
     path_csv = KELUARAN / f"{dasar}.csv"
-    pd.DataFrame({"time_s": np.round(waktu, 6), "ecg_mv": np.round(sinyal_out, 6)}).to_csv(
-        path_csv, index=False
-    )
+    with open(path_csv, "w", newline="", encoding="utf-8") as f:
+        pd.DataFrame({"time_s": np.round(waktu, 6), "ecg_mv": np.round(sinyal_out, 6)}).to_csv(
+            f, index=False, lineterminator="\n"
+        )
     print(f"\nDitulis: {path_csv.relative_to(AKAR)}  (kolom time_s, ecg_mv)")
 
     if info["anotator"]:
@@ -192,20 +193,21 @@ def main() -> None:
         )
         bpm, jumlah = bpm_dari_anotasi(anotasi.sample, list(anotasi.symbol), fs_asli)
         path_acuan = KELUARAN / f"{dasar}_reference.csv"
-        pd.DataFrame(
-            [
-                {
-                    "file": path_csv.name,
-                    "bpm_acuan": round(bpm, 4),
-                    "jumlah_denyut_anotasi": jumlah,
-                    "fs_hz": argumen.fs_target,
-                    "fs_asli_hz": fs_asli,
-                    "durasi_s": argumen.durasi,
-                    "sumber": info["nama"],
-                    "lisensi": info["lisensi"],
-                }
-            ]
-        ).to_csv(path_acuan, index=False)
+        with open(path_acuan, "w", newline="", encoding="utf-8") as f:
+            pd.DataFrame(
+                [
+                    {
+                        "file": path_csv.name,
+                        "bpm_acuan": round(bpm, 4),
+                        "jumlah_denyut_anotasi": jumlah,
+                        "fs_hz": argumen.fs_target,
+                        "fs_asli_hz": fs_asli,
+                        "durasi_s": argumen.durasi,
+                        "sumber": info["nama"],
+                        "lisensi": info["lisensi"],
+                    }
+                ]
+            ).to_csv(f, index=False, lineterminator="\n")
         print(f"Ditulis: {path_acuan.relative_to(AKAR)}")
         print(f"\nBPM acuan dari anotasi kardiolog: {bpm:.2f} ({jumlah} denyut)")
     else:

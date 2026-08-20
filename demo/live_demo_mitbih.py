@@ -157,9 +157,12 @@ def siapkan(dari_lokal: str | None = None) -> int:
 
     waktu = np.arange(turun.size) / FS_TARGET
     DEMO_DIR.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame({"time_s": np.round(waktu, 5), "ecg_mv": np.round(turun, 5)}).to_csv(
-        CSV_DEMO, index=False
-    )
+    # newline="" + lineterminator="\n": paksa LF di semua OS (lihat catatan
+    # yang sama di data/make_dataset.py).
+    with open(CSV_DEMO, "w", newline="", encoding="utf-8") as f:
+        pd.DataFrame({"time_s": np.round(waktu, 5), "ecg_mv": np.round(turun, 5)}).to_csv(
+            f, index=False, lineterminator="\n"
+        )
 
     denyut = np.asarray(
         [s for s, sym in zip(anotasi.sample, anotasi.symbol, strict=False) if sym in SIMBOL_DENYUT],
@@ -168,18 +171,19 @@ def siapkan(dari_lokal: str | None = None) -> int:
     bpm_acuan = (
         float(60.0 / np.mean(np.diff(denyut) / int(rekaman.fs))) if denyut.size >= 2 else float("nan")
     )
-    pd.DataFrame(
-        [{
-            "sumber": f"mitdb/{REKAMAN}",
-            "kanal": nama_kanal[kanal],
-            "fs_asli_hz": int(rekaman.fs),
-            "fs_hz": FS_TARGET,
-            "durasi_s": DURASI_S,
-            "jumlah_denyut_anotasi": int(denyut.size),
-            "bpm_acuan": round(bpm_acuan, 2),
-            "lisensi": "ODC-BY 1.0",
-        }]
-    ).to_csv(CSV_ACUAN, index=False)
+    with open(CSV_ACUAN, "w", newline="", encoding="utf-8") as f:
+        pd.DataFrame(
+            [{
+                "sumber": f"mitdb/{REKAMAN}",
+                "kanal": nama_kanal[kanal],
+                "fs_asli_hz": int(rekaman.fs),
+                "fs_hz": FS_TARGET,
+                "durasi_s": DURASI_S,
+                "jumlah_denyut_anotasi": int(denyut.size),
+                "bpm_acuan": round(bpm_acuan, 2),
+                "lisensi": "ODC-BY 1.0",
+            }]
+        ).to_csv(f, index=False, lineterminator="\n")
     (DEMO_DIR / "SUMBER.md").write_text(SUMBER_MD, encoding="utf-8")
 
     print(f"\nTertulis: {CSV_DEMO.relative_to(AKAR)} ({CSV_DEMO.stat().st_size // 1024} KB)")
