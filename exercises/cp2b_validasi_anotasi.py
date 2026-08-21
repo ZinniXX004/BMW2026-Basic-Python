@@ -51,7 +51,7 @@ def cocokkan(
 
     for titik_acuan in acuan:
         jarak = np.abs(deteksi - titik_acuan)
-        jarak[terpakai] = np.iinfo(np.int64).max
+        jarak[terpakai] = np.iinfo(jarak.dtype).max
         if jarak.size == 0:
             continue
         kandidat = int(np.argmin(jarak))
